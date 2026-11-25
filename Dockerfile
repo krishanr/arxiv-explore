@@ -8,7 +8,7 @@ ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH="/app/.venv/bin:$PATH"
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-default-groups --no-install-project
 
-COPY app.py ./
+COPY app.py analytics.py ./
 COPY pipeline/__init__.py pipeline/jsonl.py pipeline/
 COPY assets/ assets/
 COPY data/ data/

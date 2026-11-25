@@ -1,24 +1,30 @@
-# Fly.io config. `fly launch --no-deploy` will offer to change the app name and region.
-app = "arxiv-explore"
-primary_region = "yyz" # Toronto; pick the region nearest you/your visitors (`fly platform regions`)
+# fly.toml app configuration file generated for arxiv-explore on 2026-11-25T17:18:01-05:00
+#
+# See https://docs.fly.io/reference/configuration for information about how to use this file.
+#
+
+app = 'arxiv-explore'
+primary_region = 'yyz'
+
+[build]
+[env]
+  UMAMI_WEBSITE_ID = '854a673f-4678-4a13-a713-dafa638ee984'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  # Stop the machine when idle and start it on the next request (pay only while running).
-  # Set min_machines_running = 1 to avoid the few-second cold start.
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
   [[http_service.checks]]
-    interval = "30s"
-    timeout = "5s"
-    grace_period = "20s"
-    method = "GET"
-    path = "/"
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '20s'
+    method = 'GET'
+    path = '/'
 
 [[vm]]
-  memory = "512mb"
-  cpu_kind = "shared"
+  memory = '512mb'
+  cpu_kind = 'shared'
   cpus = 1

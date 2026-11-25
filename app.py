@@ -18,6 +18,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
 
+import analytics
 from pipeline.jsonl import read_jsonl
 
 DATA = Path(__file__).resolve().parent / "data"
@@ -221,7 +222,9 @@ def paper_card(arxiv_id: str | None):
         authors += f" … (+{p['n_authors'] - len(p['authors'])} more)"
 
     def link(label, href):
-        return html.A(label, href=href, target="_blank", rel="noopener", className="me-3")
+        return html.A(
+            label, href=href, target="_blank", rel="noopener", className="me-3", **{"data-umami-event": f"open {label}"}
+        )
 
     return [
         html.H4(p["title"], className="mb-1"),
@@ -255,12 +258,18 @@ def icon_link(label: str, href: str, icon: str) -> html.A:
         target="_blank",
         rel="noopener",
         className="icon-link",
-        **{"aria-label": label},
+        **{"aria-label": label, "data-umami-event": f"open {icon.removesuffix('.svg')}"},
     )
 
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="arXiv Explorer")
+app = Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_scripts=analytics.external_scripts(),
+    title="arXiv Explorer",
+)
 server = app.server
+analytics.register(server)
 
 app.layout = html.Div(
     [
@@ -307,7 +316,9 @@ app.layout = html.Div(
                         ),
                         html.Div(
                             [
-                                icon_link("By Krishan Rajaratnam (PhD)", "https://krishanr.github.io/blog/", "blog.svg"),
+                                icon_link(
+                                    "By Krishan Rajaratnam (PhD)", "https://krishanr.github.io/blog/", "blog.svg"
+                                ),
                                 icon_link(
                                     "Source code on GitHub", "https://github.com/krishanr/arxiv-explore", "github.svg"
                                 ),

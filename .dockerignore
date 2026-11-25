@@ -2,6 +2,7 @@
 !pyproject.toml
 !uv.lock
 !app.py
+!analytics.py
 !pipeline/__init__.py
 !pipeline/jsonl.py
 !assets/
