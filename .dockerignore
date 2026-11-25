@@ -1,0 +1,11 @@
+*
+!pyproject.toml
+!uv.lock
+!app.py
+!pipeline/__init__.py
+!pipeline/jsonl.py
+!assets/
+!data/taxonomy.json
+!data/categories.json
+!data/top_papers.jsonl
+!data/state.json

@@ -1,0 +1,37 @@
+[project]
+name = "arxiv-explore"
+version = "2.0.0"
+description = "Explore the most-cited arXiv preprints by category and year."
+requires-python = ">=3.12"
+dependencies = [
+    "dash>=4.5.1",
+    "dash-bootstrap-components>=2.0.4",
+    "gunicorn>=27.0.1",
+    "pandas>=3.1.1",
+]
+
+[dependency-groups]
+pipeline = [
+    "beautifulsoup4>=4.15.0",
+    "requests>=2.34.2",
+]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.uv]
+default-groups = ["pipeline", "dev"]
+package = false
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+ignore = ["SIM905"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:dash"

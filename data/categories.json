@@ -1,0 +1,634 @@
+{
+ "astro-ph": {
+  "count": 105283,
+  "first_year": 1995
+ },
+ "astro-ph.CO": {
+  "count": 80013,
+  "first_year": 1995
+ },
+ "astro-ph.EP": {
+  "count": 36866,
+  "first_year": 2015
+ },
+ "astro-ph.GA": {
+  "count": 81619,
+  "first_year": 2008
+ },
+ "astro-ph.HE": {
+  "count": 72598,
+  "first_year": 2009
+ },
+ "astro-ph.IM": {
+  "count": 38506,
+  "first_year": 1995
+ },
+ "astro-ph.SR": {
+  "count": 72310,
+  "first_year": 2011
+ },
+ "cond-mat": {
+  "count": 14128,
+  "first_year": 1991
+ },
+ "cond-mat.dis-nn": {
+  "count": 27526,
+  "first_year": 1992
+ },
+ "cond-mat.mes-hall": {
+  "count": 104627,
+  "first_year": 1996
+ },
+ "cond-mat.mtrl-sci": {
+  "count": 114470,
+  "first_year": 2002
+ },
+ "cond-mat.other": {
+  "count": 17299,
+  "first_year": 1994
+ },
+ "cond-mat.quant-gas": {
+  "count": 25004,
+  "first_year": 1999
+ },
+ "cond-mat.soft": {
+  "count": 46777,
+  "first_year": 2004
+ },
+ "cond-mat.stat-mech": {
+  "count": 84541,
+  "first_year": 1996
+ },
+ "cond-mat.str-el": {
+  "count": 85843,
+  "first_year": 1992
+ },
+ "cond-mat.supr-con": {
+  "count": 48544,
+  "first_year": 2002
+ },
+ "cs.AI": {
+  "count": 214516,
+  "first_year": 1992
+ },
+ "cs.AR": {
+  "count": 9723,
+  "first_year": 1997
+ },
+ "cs.CC": {
+  "count": 14071,
+  "first_year": 1992
+ },
+ "cs.CE": {
+  "count": 11832,
+  "first_year": 1996
+ },
+ "cs.CG": {
+  "count": 8575,
+  "first_year": 1997
+ },
+ "cs.CL": {
+  "count": 126070,
+  "first_year": 1993
+ },
+ "cs.CR": {
+  "count": 54766,
+  "first_year": 1995
+ },
+ "cs.CV": {
+  "count": 214748,
+  "first_year": 1997
+ },
+ "cs.CY": {
+  "count": 31478,
+  "first_year": 1997
+ },
+ "cs.DB": {
+  "count": 12798,
+  "first_year": 1997
+ },
+ "cs.DC": {
+  "count": 31361,
+  "first_year": 1997
+ },
+ "cs.DL": {
+  "count": 6499,
+  "first_year": 1997
+ },
+ "cs.DM": {
+  "count": 16587,
+  "first_year": 1997
+ },
+ "cs.DS": {
+  "count": 31344,
+  "first_year": 1992
+ },
+ "cs.ET": {
+  "count": 8224,
+  "first_year": 1995
+ },
+ "cs.FL": {
+  "count": 6372,
+  "first_year": 1997
+ },
+ "cs.GL": {
+  "count": 248,
+  "first_year": 1992
+ },
+ "cs.GR": {
+  "count": 10168,
+  "first_year": 1992
+ },
+ "cs.GT": {
+  "count": 16195,
+  "first_year": 1999
+ },
+ "cs.HC": {
+  "count": 34355,
+  "first_year": 1997
+ },
+ "cs.IR": {
+  "count": 28289,
+  "first_year": 1997
+ },
+ "cs.IT": {
+  "count": 47330,
+  "first_year": 1992
+ },
+ "cs.LG": {
+  "count": 194337,
+  "first_year": 1996
+ },
+ "cs.LO": {
+  "count": 20737,
+  "first_year": 1993
+ },
+ "cs.MA": {
+  "count": 14630,
+  "first_year": 1997
+ },
+ "cs.MM": {
+  "count": 10383,
+  "first_year": 1997
+ },
+ "cs.MS": {
+  "count": 2853,
+  "first_year": 1997
+ },
+ "cs.NA": {
+  "count": 30576,
+  "first_year": 1991
+ },
+ "cs.NE": {
+  "count": 18672,
+  "first_year": 1997
+ },
+ "cs.NI": {
+  "count": 29087,
+  "first_year": 1996
+ },
+ "cs.OH": {
+  "count": 2299,
+  "first_year": 1998
+ },
+ "cs.OS": {
+  "count": 1599,
+  "first_year": 1997
+ },
+ "cs.PF": {
+  "count": 5908,
+  "first_year": 1997
+ },
+ "cs.PL": {
+  "count": 10625,
+  "first_year": 1993
+ },
+ "cs.RO": {
+  "count": 63233,
+  "first_year": 1997
+ },
+ "cs.SC": {
+  "count": 3341,
+  "first_year": 1997
+ },
+ "cs.SD": {
+  "count": 23130,
+  "first_year": 1999
+ },
+ "cs.SE": {
+  "count": 31366,
+  "first_year": 1997
+ },
+ "cs.SI": {
+  "count": 24320,
+  "first_year": 1999
+ },
+ "cs.SY": {
+  "count": 24545,
+  "first_year": 2003
+ },
+ "econ.EM": {
+  "count": 6187,
+  "first_year": 2004
+ },
+ "econ.GN": {
+  "count": 7827,
+  "first_year": 2008
+ },
+ "econ.TH": {
+  "count": 4711,
+  "first_year": 2002
+ },
+ "eess.AS": {
+  "count": 23222,
+  "first_year": 2017
+ },
+ "eess.IV": {
+  "count": 32225,
+  "first_year": 2009
+ },
+ "eess.SP": {
+  "count": 43745,
+  "first_year": 2017
+ },
+ "eess.SY": {
+  "count": 26028,
+  "first_year": 2017
+ },
+ "gr-qc": {
+  "count": 126630,
+  "first_year": 2003
+ },
+ "hep-ex": {
+  "count": 62171,
+  "first_year": 1993
+ },
+ "hep-lat": {
+  "count": 31067,
+  "first_year": 1991
+ },
+ "hep-ph": {
+  "count": 201414,
+  "first_year": 1995
+ },
+ "hep-th": {
+  "count": 187467,
+  "first_year": 1998
+ },
+ "math-ph": {
+  "count": 94494,
+  "first_year": 2001
+ },
+ "math.AC": {
+  "count": 15679,
+  "first_year": 1991
+ },
+ "math.AG": {
+  "count": 62922,
+  "first_year": 1991
+ },
+ "math.AP": {
+  "count": 79985,
+  "first_year": 1991
+ },
+ "math.AT": {
+  "count": 18847,
+  "first_year": 1991
+ },
+ "math.CA": {
+  "count": 26481,
+  "first_year": 1991
+ },
+ "math.CO": {
+  "count": 85570,
+  "first_year": 1991
+ },
+ "math.CT": {
+  "count": 10827,
+  "first_year": 1994
+ },
+ "math.CV": {
+  "count": 20653,
+  "first_year": 1991
+ },
+ "math.DG": {
+  "count": 50936,
+  "first_year": 1991
+ },
+ "math.DS": {
+  "count": 45677,
+  "first_year": 1991
+ },
+ "math.FA": {
+  "count": 38769,
+  "first_year": 1991
+ },
+ "math.GM": {
+  "count": 5163,
+  "first_year": 1997
+ },
+ "math.GN": {
+  "count": 6243,
+  "first_year": 1991
+ },
+ "math.GR": {
+  "count": 27147,
+  "first_year": 1991
+ },
+ "math.GT": {
+  "count": 26974,
+  "first_year": 1991
+ },
+ "math.HO": {
+  "count": 4443,
+  "first_year": 1991
+ },
+ "math.IT": {
+  "count": 10140,
+  "first_year": 1998
+ },
+ "math.KT": {
+  "count": 6840,
+  "first_year": 1992
+ },
+ "math.LO": {
+  "count": 16491,
+  "first_year": 1991
+ },
+ "math.MG": {
+  "count": 14106,
+  "first_year": 1991
+ },
+ "math.MP": {
+  "count": 5108,
+  "first_year": 1996
+ },
+ "math.NA": {
+  "count": 23312,
+  "first_year": 1997
+ },
+ "math.NT": {
+  "count": 52658,
+  "first_year": 1991
+ },
+ "math.OA": {
+  "count": 15024,
+  "first_year": 1991
+ },
+ "math.OC": {
+  "count": 66841,
+  "first_year": 1992
+ },
+ "math.PR": {
+  "count": 70396,
+  "first_year": 1991
+ },
+ "math.QA": {
+  "count": 21648,
+  "first_year": 1991
+ },
+ "math.RA": {
+  "count": 21249,
+  "first_year": 1991
+ },
+ "math.RT": {
+  "count": 31740,
+  "first_year": 1991
+ },
+ "math.SG": {
+  "count": 10617,
+  "first_year": 1991
+ },
+ "math.SP": {
+  "count": 11970,
+  "first_year": 1991
+ },
+ "math.ST": {
+  "count": 29941,
+  "first_year": 1993
+ },
+ "nlin.AO": {
+  "count": 8472,
+  "first_year": 1992
+ },
+ "nlin.CD": {
+  "count": 17695,
+  "first_year": 1991
+ },
+ "nlin.CG": {
+  "count": 1724,
+  "first_year": 1992
+ },
+ "nlin.PS": {
+  "count": 11108,
+  "first_year": 1992
+ },
+ "nlin.SI": {
+  "count": 13196,
+  "first_year": 1991
+ },
+ "nucl-ex": {
+  "count": 29243,
+  "first_year": 1993
+ },
+ "nucl-th": {
+  "count": 64182,
+  "first_year": 1996
+ },
+ "physics.acc-ph": {
+  "count": 9166,
+  "first_year": 1994
+ },
+ "physics.ao-ph": {
+  "count": 8999,
+  "first_year": 1994
+ },
+ "physics.app-ph": {
+  "count": 24738,
+  "first_year": 2003
+ },
+ "physics.atm-clus": {
+  "count": 3066,
+  "first_year": 1995
+ },
+ "physics.atom-ph": {
+  "count": 24806,
+  "first_year": 1995
+ },
+ "physics.bio-ph": {
+  "count": 18320,
+  "first_year": 1994
+ },
+ "physics.chem-ph": {
+  "count": 28930,
+  "first_year": 1993
+ },
+ "physics.class-ph": {
+  "count": 9709,
+  "first_year": 2002
+ },
+ "physics.comp-ph": {
+  "count": 30299,
+  "first_year": 1999
+ },
+ "physics.data-an": {
+  "count": 12364,
+  "first_year": 2017
+ },
+ "physics.ed-ph": {
+  "count": 4768,
+  "first_year": 1995
+ },
+ "physics.flu-dyn": {
+  "count": 36170,
+  "first_year": 2009
+ },
+ "physics.gen-ph": {
+  "count": 11103,
+  "first_year": 1999
+ },
+ "physics.geo-ph": {
+  "count": 9175,
+  "first_year": 2008
+ },
+ "physics.hist-ph": {
+  "count": 5789,
+  "first_year": 2004
+ },
+ "physics.ins-det": {
+  "count": 25323,
+  "first_year": 1995
+ },
+ "physics.med-ph": {
+  "count": 9468,
+  "first_year": 1996
+ },
+ "physics.optics": {
+  "count": 59414,
+  "first_year": 1996
+ },
+ "physics.plasm-ph": {
+  "count": 20997,
+  "first_year": 2004
+ },
+ "physics.pop-ph": {
+  "count": 2715,
+  "first_year": 1993
+ },
+ "physics.soc-ph": {
+  "count": 26082,
+  "first_year": 1996
+ },
+ "physics.space-ph": {
+  "count": 7855,
+  "first_year": 1995
+ },
+ "q-bio": {
+  "count": 1159,
+  "first_year": 1992
+ },
+ "q-bio.BM": {
+  "count": 7000,
+  "first_year": 1992
+ },
+ "q-bio.CB": {
+  "count": 2509,
+  "first_year": 1994
+ },
+ "q-bio.GN": {
+  "count": 4057,
+  "first_year": 1993
+ },
+ "q-bio.MN": {
+  "count": 4290,
+  "first_year": 1993
+ },
+ "q-bio.NC": {
+  "count": 12859,
+  "first_year": 1992
+ },
+ "q-bio.OT": {
+  "count": 2049,
+  "first_year": 1998
+ },
+ "q-bio.PE": {
+  "count": 13425,
+  "first_year": 1992
+ },
+ "q-bio.QM": {
+  "count": 13915,
+  "first_year": 1991
+ },
+ "q-bio.SC": {
+  "count": 1836,
+  "first_year": 1994
+ },
+ "q-bio.TO": {
+  "count": 2687,
+  "first_year": 1998
+ },
+ "q-fin.CP": {
+  "count": 3477,
+  "first_year": 1997
+ },
+ "q-fin.EC": {
+  "count": 0,
+  "first_year": null
+ },
+ "q-fin.GN": {
+  "count": 3130,
+  "first_year": 1996
+ },
+ "q-fin.MF": {
+  "count": 3576,
+  "first_year": 2013
+ },
+ "q-fin.PM": {
+  "count": 2540,
+  "first_year": 1996
+ },
+ "q-fin.PR": {
+  "count": 2304,
+  "first_year": 1996
+ },
+ "q-fin.RM": {
+  "count": 3182,
+  "first_year": 1997
+ },
+ "q-fin.ST": {
+  "count": 4462,
+  "first_year": 1996
+ },
+ "q-fin.TR": {
+  "count": 2481,
+  "first_year": 1996
+ },
+ "quant-ph": {
+  "count": 191352,
+  "first_year": 2000
+ },
+ "stat.AP": {
+  "count": 24970,
+  "first_year": 2017
+ },
+ "stat.CO": {
+  "count": 10923,
+  "first_year": 2005
+ },
+ "stat.ME": {
+  "count": 39382,
+  "first_year": 2017
+ },
+ "stat.ML": {
+  "count": 174954,
+  "first_year": 1998
+ },
+ "stat.OT": {
+  "count": 1783,
+  "first_year": 2007
+ },
+ "stat.TH": {
+  "count": 3,
+  "first_year": 2003
+ }
+}
