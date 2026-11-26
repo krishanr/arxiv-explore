@@ -7,16 +7,21 @@ URL state:    /?cat=<view>&paper=<arXiv id>
               view is "" (all of arXiv), "group:<group name>", or an arXiv category code like "cs.LG".
 """
 
+import html as htmllib
 import json
 import math
+import os
+import re
 from datetime import datetime
+from functools import cache
 from pathlib import Path
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 from dash import Dash, Input, Output, State, ctx, dcc, html, no_update
+from flask import Response, redirect, request
 
 import analytics
 from pipeline.jsonl import read_jsonl
@@ -28,6 +33,9 @@ TEXT, TEXT_2, GRID = "#191919", "#666666", "#e6e6e6"
 # Single-hue sequential ramp (light -> arXiv red) for category size.
 SIZE_SCALE = [[0, "#f6d5d5"], [0.5, "#e07a7a"], [1, ARXIV_RED]]
 ROOT_ID = "all"
+SITE_URL = os.environ.get("SITE_URL", "https://arxivexplorer.com")
+SITE_NAME = "arXiv Explorer"
+PRERENDER_PAPERS = 25
 
 # ---------------------------------------------------------------- data
 
@@ -69,6 +77,7 @@ def view_name(view: str) -> str:
     return f"{taxonomy.at[view, 'name']} ({view})"
 
 
+@cache  # data only changes on redeploy; ~170 possible views. Callers must not mutate.
 def view_papers(view: str) -> pd.DataFrame:
     """Top-K papers per posting year within a view (category, group or all)."""
     if view.startswith("group:"):
@@ -246,6 +255,129 @@ def paper_card(arxiv_id: str | None):
     ]
 
 
+# ---------------------------------------------------------------- crawler-visible HTML
+# Dash renders everything in the browser, so search engines and link previews would otherwise see an empty page.
+# For each request we put a per-page title, meta tags and a plain-HTML summary into the initial response. Every
+# value comes from parse_url(), which only accepts views/papers that exist in our data, and is HTML-escaped.
+
+
+_FORMAT_TAGS = re.compile(r"</?(?:sub|sup|inf|i|b|em|strong|it|bf|tt)\b[^>]*>", re.IGNORECASE)
+
+
+def plain_text(text: str) -> str:
+    """Drop the formatting tags ADS puts in titles/abstracts (e.g. MoS<SUB>2</SUB> -> MoS2); collapse whitespace."""
+    return " ".join(_FORMAT_TAGS.sub("", str(text)).split())
+
+
+def page_info(view: str, paper: str | None) -> dict:
+    """Plain-text page title, heading, social-preview title, description and canonical path for a page."""
+    if paper is not None:
+        p = papers.loc[paper]
+        authors = p["authors"][0] + (" et al." if p["n_authors"] > 1 else "") if p["authors"] else "Unknown authors"
+        abstract = plain_text(p["abstract"])
+        lead = f"{authors}, {p['year']}. {p['citations']:,} citations. "
+        description = lead + (abstract[: 200 - len(lead)].rsplit(" ", 1)[0] + "…" if abstract else "")
+        heading = f"{plain_text(p['title'])} ({p['year']})"
+        return {
+            "title": f"{heading} · {p['citations']:,} citations · {SITE_NAME}",
+            "heading": heading,
+            "og_title": heading,
+            "description": description,
+            "path": "/" + make_url(p["category"], paper),  # one canonical URL per paper
+        }
+    if not view:
+        heading = "The most-cited arXiv preprints by category and year"
+        return {
+            "title": f"{SITE_NAME}: the most-cited arXiv preprints by category and year",
+            "heading": heading,
+            "og_title": f"{SITE_NAME}: the most-cited arXiv preprints by category and year",
+            "description": (
+                "Explore the most-cited arXiv preprints in every category, year by year: physics, mathematics, "
+                "computer science, statistics and more, with citation counts from NASA ADS updated weekly."
+            ),
+            "path": "/",
+        }
+    name = view_name(view)
+    rows = view_papers(view)
+    heading = f"Most-cited {name} papers by year"
+    description = f"The {TOP_K} most-cited arXiv papers posted each year in {name}"
+    if rows.empty:
+        description += "."
+    else:
+        best = rows.loc[rows["citations"].idxmax()]
+        description += (
+            f", {rows['year'].min()}–{rows['year'].max()}. "
+            f"Most cited: {plain_text(best['title'])} ({best['year']}, {best['citations']:,} citations)."
+        )
+    return {
+        "title": f"{heading} · {SITE_NAME}",
+        "heading": heading,
+        "og_title": heading,
+        "description": description,
+        "path": "/" + make_url(view),
+    }
+
+
+def page_html(view: str, paper: str | None) -> tuple[str, str]:
+    """(extra <head> tags, inner HTML for the React entry point) for one page."""
+    esc = htmllib.escape
+    info = page_info(view, paper)
+    url = SITE_URL + info["path"]
+    tags = [
+        f'<meta name="description" content="{esc(info["description"])}">',
+        f'<link rel="canonical" href="{esc(url)}">',
+        f'<meta property="og:type" content="{"article" if paper else "website"}">',
+        f'<meta property="og:site_name" content="{SITE_NAME}">',
+        f'<meta property="og:title" content="{esc(info["og_title"])}">',
+        f'<meta property="og:description" content="{esc(info["description"])}">',
+        f'<meta property="og:url" content="{esc(url)}">',
+        '<meta name="twitter:card" content="summary">',
+    ]
+
+    def a(href: str, text: str) -> str:
+        return f'<a href="{esc(href)}">{esc(text)}</a>'
+
+    body = ['<p class="prerender-loading">Loading interactive charts…</p>', f"<h1>{esc(info['heading'])}</h1>"]
+    if paper is not None:
+        p = papers.loc[paper]
+        body += [
+            f"<p>{esc(', '.join(p['authors']))}{' et al.' if p['n_authors'] > len(p['authors']) else ''}</p>",
+            f"<p>{esc(plain_text(p['abstract']))}</p>",
+            f"<p>{a(f'https://arxiv.org/abs/{paper}', f'arXiv:{paper}')} · {p['citations']:,} citations</p>",
+        ]
+    else:
+        body.append(f"<p>{esc(info['description'])}</p>")
+    rows = view_papers(view).sort_values("citations", ascending=False).head(PRERENDER_PAPERS)
+    if not rows.empty:
+        body.append(f"<h2>Most-cited papers in {esc(view_name(view))}</h2><ol>")
+        body += [
+            f"<li>{a('/' + make_url(view, r.arxiv_id), plain_text(r.title))} ({r.year}, {r.citations:,} citations)</li>"
+            for r in rows.itertuples()
+        ]
+        body.append("</ol>")
+    # Links onward, so crawlers can reach every group and category.
+    if view.startswith("group:"):
+        links = [
+            a("/" + make_url(c), f"{r['name']} ({c})") for c, r in taxonomy[taxonomy["group"] == view[6:]].iterrows()
+        ]
+    elif view:
+        group = taxonomy.at[view, "group"]
+        links = [a("/" + make_url(f"group:{group}"), group), a("/", "All of arXiv")]
+    else:
+        links = [a("/" + make_url(f"group:{g}"), g) for g in GROUPS]
+    body.append("<h2>Browse</h2><ul>" + "".join(f"<li>{x}</li>" for x in links) + "</ul>")
+    return "\n".join(tags), '<div class="prerender">' + "\n".join(body) + "</div>"
+
+
+def interpolate_index(**kwargs) -> str:
+    view, paper = parse_url(request.query_string.decode("utf-8", "replace"))
+    head, entry = page_html(view, paper)
+    kwargs["title"] = htmllib.escape(page_info(view, paper)["title"])
+    kwargs["metas"] = kwargs.get("metas", "") + "\n" + head
+    kwargs["app_entry"] = f'<div id="react-entry-point">{entry}</div>'
+    return Dash.interpolate_index(app, **kwargs)
+
+
 # ---------------------------------------------------------------- layout
 
 
@@ -266,15 +398,87 @@ app = Dash(
     __name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
     external_scripts=analytics.external_scripts(),
-    title="arXiv Explorer",
+    title=SITE_NAME,
+    update_title=None,  # don't flash "Updating..." in the tab; the title is set per page instead
 )
+app.interpolate_index = interpolate_index
 server = app.server
 analytics.register(server)
+
+
+# ---------------------------------------------------------------- crawler routes
+# All page state lives in the query string, so "/" is the only page. Dash's catch-all route would otherwise serve
+# the app for any path (e.g. /robots.txt), which search engines read as broken files and duplicate pages.
+
+NOT_FOUND_HTML = (
+    "<!doctype html><html lang=en><head><meta charset=utf-8><title>Page not found · arXiv Explorer</title>"
+    '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
+    '<body style="font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem">'
+    '<h1>Page not found</h1><p><a href="/">Go to arXiv Explorer</a></p></body></html>'
+)
+
+
+CANONICAL_HOST = urlsplit(SITE_URL).hostname
+
+
+def is_duplicate_host(host: str) -> bool:
+    """Hosts that serve the same site and should 301 to SITE_URL: www.<domain> and Fly's *.fly.dev address."""
+    host = host.split(":")[0].lower()
+    return host == f"www.{CANONICAL_HOST}" or host.endswith(".fly.dev")
+
+
+@server.get("/healthz")
+def healthz():
+    # Fly's health check hits this; it's exempt from the host redirect so a check can never see a 301.
+    return Response("ok", mimetype="text/plain")
+
+
+@server.before_request
+def redirect_to_canonical_host():
+    if request.method in ("GET", "HEAD") and request.path != "/healthz" and is_duplicate_host(request.host):
+        query = request.query_string.decode("utf-8", "replace")
+        return redirect(SITE_URL + request.path + (f"?{query}" if query else ""), code=301)
+    return None
+
+
+@server.before_request
+def not_found_for_unknown_paths():
+    if request.url_rule is not None and request.url_rule.rule == "/<path:path>":
+        return Response(NOT_FOUND_HTML, status=404, mimetype="text/html")
+    return None
+
+
+@server.get("/robots.txt")
+def robots_txt():
+    return Response(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n", mimetype="text/plain")
+
+
+def sitemap_xml() -> str:
+    """Home, every group and category, and every paper at its canonical URL (matching the canonical tags)."""
+    paths = ["/"] + ["/" + make_url(f"group:{g}") for g in GROUPS] + ["/" + make_url(c) for c in taxonomy.index]
+    paths += ["/" + make_url(cat, paper_id) for paper_id, cat in papers["category"].items()]
+    lastmod = max(datetime.fromisoformat(v) for v in _state.values()).date().isoformat() if _state else None
+    mod = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""
+    entries = "".join(f"<url><loc>{htmllib.escape(SITE_URL + path)}</loc>{mod}</url>\n" for path in paths)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{entries}</urlset>\n'
+    )
+
+
+SITEMAP = sitemap_xml()
+
+
+@server.get("/sitemap.xml")
+def sitemap():
+    return Response(SITEMAP, mimetype="application/xml", headers={"Cache-Control": "public, max-age=3600"})
+
 
 app.layout = html.Div(
     [
         dcc.Location(id="url", refresh=False),
         dcc.Store(id="scroll-to"),  # element id to scroll to once the next render lands
+        dcc.Store(id="page-title"),  # browser tab title for the current view
         dbc.Navbar(
             dbc.Container(
                 [
@@ -397,15 +601,26 @@ def next_url(source: str, event, search: str | None) -> str:
     Output("view-title", "children"),
     Output("dots", "figure"),
     Output("paper", "children"),
+    Output("page-title", "data"),
     Input("url", "search"),
 )
 def render(search):
     view, paper = parse_url(search)
+    page_title = page_info(view, paper)["title"]
     rows = view_papers(view)
     if paper is None and not rows.empty:
         paper = rows.loc[rows["citations"].idxmax(), "arxiv_id"]
     title = f"Top {TOP_K} most-cited papers per year in {view_name(view)} (dot size ∝ log citations)"
-    return treemap_figure(view), title, dots_figure(rows, paper), paper_card(paper)
+    return treemap_figure(view), title, dots_figure(rows, paper), paper_card(paper), page_title
+
+
+# Keep the browser tab title in step with in-app navigation (the server only sets it on first load).
+app.clientside_callback(
+    "function(title) { if (title) { document.title = title; } return window.dash_clientside.no_update; }",
+    Output("page-title", "data", allow_duplicate=True),
+    Input("page-title", "data"),
+    prevent_initial_call=True,
+)
 
 
 SEARCH_INDEX = [(f"group:{g}", g, g.lower()) for g in GROUPS]

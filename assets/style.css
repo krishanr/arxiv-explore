@@ -1,3 +1,9 @@
 /* Footer icon links: gray to match the footer text, full strength on hover/focus. */
 .icon-link img { width: 22px; height: 22px; opacity: 0.7; transition: opacity 0.15s; }
 .icon-link:hover img, .icon-link:focus-visible img { opacity: 1; }
+
+/* Plain-HTML page summary shown until the Dash app loads (and to crawlers / link previews). */
+.prerender { max-width: 960px; margin: 1.5rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; color: #444; }
+.prerender h1 { font-size: 1.4rem; }
+.prerender h2 { font-size: 1.1rem; margin-top: 1.2rem; }
+.prerender-loading { color: #b31b1b; font-weight: 600; }
