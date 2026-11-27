@@ -651,5 +651,53 @@ def search_options(text):
     return [{"value": v, "label": label} for v, label in hits[:25]]
 
 
+# ---------------------------------------------------------------- security headers
+# Set on every response. The CSP lists the hashes of Dash's inline scripts (its renderer bootstrap and our
+# clientside callbacks) instead of allowing all inline scripts. Plotly injects <style> tags, so styles need
+# 'unsafe-inline'; Bootstrap's CSS comes from jsDelivr.
+
+
+@cache
+def content_security_policy() -> str:
+    # Built on first use, after every callback (and so every inline script) has been registered.
+    return "; ".join(
+        [
+            "default-src 'self'",
+            "script-src 'self' " + " ".join(app.csp_hashes()),
+            "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'",
+            "img-src 'self' data:",
+            "font-src 'self' data:",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "frame-ancestors 'none'",
+        ]
+    )
+
+
+SECURITY_HEADERS = {
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+}
+
+
+@server.after_request
+def add_security_headers(response):
+    response.headers.update(SECURITY_HEADERS)
+    response.headers["Content-Security-Policy"] = content_security_policy()
+    return response
+
+
+@server.before_request
+def hide_dev_endpoints():
+    # Dash's hot-reload endpoint is only meaningful when running `python app.py` in debug mode.
+    if request.path == "/_reload-hash" and not app._dev_tools.hot_reload:
+        return Response(NOT_FOUND_HTML, status=404, mimetype="text/html")
+    return None
+
+
 if __name__ == "__main__":
     app.run(debug=True)

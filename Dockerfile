@@ -13,5 +13,9 @@ COPY pipeline/__init__.py pipeline/jsonl.py pipeline/
 COPY assets/ assets/
 COPY data/ data/
 
+# Run as an unprivileged user; the app only needs to read the files above (owned by root, world-readable).
+RUN useradd --create-home --uid 10001 app
+USER app
+
 EXPOSE 8080
 CMD ["gunicorn", "app:server", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "4"]
