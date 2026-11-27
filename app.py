@@ -91,10 +91,17 @@ def view_papers(view: str) -> pd.DataFrame:
 
 
 def displayed_level(view: str) -> str:
-    """Treemap node to zoom to: a selected category is shown inside its group."""
+    """Treemap node to zoom to. A selected category is zoomed onto its own tile, as Plotly does when it's clicked."""
     if not view:
         return ROOT_ID
-    return view if view.startswith("group:") else f"group:{taxonomy.at[view, 'group']}"
+    return view if view.startswith("group:") else f"cat:{view}"
+
+
+def parent_view(view: str) -> str:
+    """One level up: category -> its group -> all of arXiv."""
+    if view and not view.startswith("group:"):
+        return f"group:{taxonomy.at[view, 'group']}"
+    return ""
 
 
 # ---------------------------------------------------------------- figures
@@ -479,6 +486,7 @@ app.layout = html.Div(
         dcc.Location(id="url", refresh=False),
         dcc.Store(id="scroll-to"),  # element id to scroll to once the next render lands
         dcc.Store(id="page-title"),  # browser tab title for the current view
+        dcc.Store(id="treemap-view"),  # view the treemap currently shows, so paper clicks don't redraw it
         dbc.Navbar(
             dbc.Container(
                 [
@@ -586,7 +594,7 @@ def next_url(source: str, event, search: str | None) -> str:
     if source == "treemap":
         clicked = event["points"][0]["id"]
         if clicked == displayed_level(view):
-            clicked = ROOT_ID  # clicking the zoomed-in group's header zooms back out
+            return make_url(parent_view(view))  # clicking the zoomed-in tile's header goes up one level
         return make_url("" if clicked == ROOT_ID else clicked.removeprefix("cat:"))
     if source == "dots":
         return make_url(view, event["points"][0]["customdata"][0])
@@ -602,16 +610,20 @@ def next_url(source: str, event, search: str | None) -> str:
     Output("dots", "figure"),
     Output("paper", "children"),
     Output("page-title", "data"),
+    Output("treemap-view", "data"),
     Input("url", "search"),
+    State("treemap-view", "data"),
 )
-def render(search):
+def render(search, shown_view):
     view, paper = parse_url(search)
+    # Only redraw the treemap when the view changes; selecting a paper (e.g. clicking a dot) leaves it as is.
+    treemap = no_update if view == shown_view else treemap_figure(view)
     page_title = page_info(view, paper)["title"]
     rows = view_papers(view)
     if paper is None and not rows.empty:
         paper = rows.loc[rows["citations"].idxmax(), "arxiv_id"]
     title = f"Top {TOP_K} most-cited papers per year in {view_name(view)} (dot size ∝ log citations)"
-    return treemap_figure(view), title, dots_figure(rows, paper), paper_card(paper), page_title
+    return treemap, title, dots_figure(rows, paper), paper_card(paper), page_title, view
 
 
 # Keep the browser tab title in step with in-app navigation (the server only sets it on first load).
